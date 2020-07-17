@@ -18,12 +18,12 @@ function getEmployeeInfo(){
       },
       {
         type: "input",
-        message: "What is the employee ID?",
+        message: "What is the employee's ID?",
         name: "empID"
       },
       {
         type: "input",
-        message: "What is they employee email?",
+        message: "What is the employee's email?",
         name: "empEmail"
       },
       {
