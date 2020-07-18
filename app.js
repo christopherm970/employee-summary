@@ -10,6 +10,8 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+const teamMembers = []
+
 function getEmployeeInfo(){
     inquirer.prompt([
       {type: "input",
@@ -38,7 +40,7 @@ function getEmployeeInfo(){
         message: "What is the manager's office number?",
         name: "manNum",
         when: response => {
-          return (response.title === "Manager")
+          return (response.empRole === "Manager")
         }
       },
       // If engineer
@@ -47,7 +49,7 @@ function getEmployeeInfo(){
         message: "What is the employee's github username?",
         name: "engGit",
         when: response => {
-          return (response.title === "Engineer")
+          return (response.empRole === "Engineer")
         },
       },
       // If Intern
@@ -56,24 +58,54 @@ function getEmployeeInfo(){
         message: "What is the intern's school name?",
         name: "intSch",
         when: response => {
-          return (response.title === "Intern")
+          return (response.empRole === "Intern")
         }
       },
     ]).then(function(response){
       // if manager
-      if(response.title === "Manager"){
+      if(response.empRole === "Manager"){
         let manager = new Manager(response.empName, response.empID, response.empEmail, response.manNum)
+        teamMembers.push(manager)
+        contQ()
       }
       // if engineer
-      if(response.title === "Engineer"){
+      if(response.empRole === "Engineer"){
         let engineer = new Engineer(response.empName, response.empID, response.empEmail, response.engGit)
+        teamMembers.push(engineer)
+        contQ()
       }
       // if intern
-      if(response.title === "Intern"){
+      if(response.empRole === "Intern"){
         let intern = new Intern(response.empName, response.empID, response.empEmail, response.intSch)
+        teamMembers.push(intern)
+        contQ()
       }
     })
 }
+
+function contQ() {
+  inquirer.prompt([
+    {
+      type: "confirm",
+      message: "Do you want to add another team member?",
+      name: "continueQ"
+    }
+  ]).then(function(response){
+    if(response.contQ){
+      getEmployeeInfo()
+    }else{
+      var teamHTML = render(teamMembers)
+      fs.writeFile(outputPath, teamHTML, function(err) {
+        if (err) {
+          return console.log(err);
+        }
+        console.log("Success!");
+      })
+    }
+  })
+}
+
+getEmployeeInfo();
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
